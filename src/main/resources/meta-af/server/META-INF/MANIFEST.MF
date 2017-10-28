@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: jsice.network.multishooting.server.MainServer
+
