@@ -49,9 +49,10 @@ public class Server extends Thread {
     }
 
     public void sendUpdateObjects() throws IOException {
-        Iterator<PlayerInfo> iterator = gameManager.getPlayerInfos().iterator();
-        while (iterator.hasNext()) {
-            PlayerInfo playerInfo = iterator.next();
+        int playerInfosSize = gameManager.getPlayerInfos().size();
+        for (int i = 0; i < playerInfosSize; i++) {
+            if (i >= gameManager.getPlayerInfos().size()) break;
+            PlayerInfo playerInfo = gameManager.getPlayerInfos().get(i);
             InetAddress ip = playerInfo.getIp();
             int port = playerInfo.getPort();
             Tank player = playerInfo.getTank();
