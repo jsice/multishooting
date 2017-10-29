@@ -1,4 +1,4 @@
-package jsice.network.multishooting.client.controllers;
+package jsice.network.multishooting.client.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;

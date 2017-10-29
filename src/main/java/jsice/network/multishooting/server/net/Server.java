@@ -11,6 +11,7 @@ import jsice.network.multishooting.server.model.PlayerInfo;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Server extends Thread {
 
@@ -48,7 +49,9 @@ public class Server extends Thread {
     }
 
     public void sendUpdateObjects() throws IOException {
-        for (PlayerInfo playerInfo: gameManager.getPlayerInfos()) {
+        Iterator<PlayerInfo> iterator = gameManager.getPlayerInfos().iterator();
+        while (iterator.hasNext()) {
+            PlayerInfo playerInfo = iterator.next();
             InetAddress ip = playerInfo.getIp();
             int port = playerInfo.getPort();
             Tank player = playerInfo.getTank();

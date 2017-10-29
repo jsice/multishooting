@@ -78,16 +78,18 @@ public class GameManager extends Thread {
         Random rand = new Random();
         double width = 60;
         double height = 60;
+        ArrayList<GameEntity> gameEntities = new ArrayList<>();
+        gameEntities.addAll(tanks);
+        gameEntities.addAll(bullets);
+        gameEntities.addAll(walls);
         while (!done) {
             randomX = rand.nextInt((maxX - minX) + 1) + minX;
             randomY = rand.nextInt((maxY - minY) + 1) + minY;
-            System.out.printf("%d: %f %f\n",round, randomX, randomY);
-            Rectangle playerBox = new Rectangle(randomX, randomY, width, height);
-            ArrayList<GameEntity> gameEntities = new ArrayList<>();
-            gameEntities.addAll(tanks);
-            gameEntities.addAll(bullets);
-            gameEntities.addAll(walls);
-            if (gameEntities.size() == 0) done = true;
+            Rectangle playerBox = new Rectangle(randomX - width/2, randomY - height/2, width, height);
+
+            if (gameEntities.size() == 0) {
+                done = true;
+            }
             for (GameEntity entity: gameEntities) {
                 if (playerBox.intersects(entity.getShape().getLayoutBounds())) {
                     done = false;
@@ -182,10 +184,16 @@ public class GameManager extends Thread {
     @Override
     public void run() {
         while (true) {
-            for (Bullet bullet: bullets) {
+            int playerInfosSize = playerInfos.size();
+            int bulletsSize = bullets.size();
+            int tankSize = tanks.size();
+            for (int i = 0; i < bulletsSize; i++) {
+                Bullet bullet = bullets.get(i);
                 bullet.move();
             }
-            for (PlayerInfo playerInfo: playerInfos) {
+
+            for (int i = 0; i < playerInfosSize; i++) {
+                PlayerInfo playerInfo = playerInfos.get(i);
                 Tank t = playerInfo.getTank();
                 int action = playerInfo.getAction();
                 if ((action & 1) != 0) t.rotateLeft();
@@ -208,7 +216,8 @@ public class GameManager extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            for (Bullet bullet: bullets) {
+            for (int i = 0; i < bulletsSize; i++) {
+                Bullet bullet = bullets.get(i);
                 if (!bullet.isHit()) {
                     for (Wall w: walls) {
                         if (bullet.getShape().intersects(w.getShape().getLayoutBounds())) {
@@ -218,7 +227,8 @@ public class GameManager extends Thread {
                     }
                 }
                 if (!bullet.isHit()) {
-                    for (Tank tank : tanks) {
+                    for (int j = 0; j < tankSize; j++) {
+                        Tank tank = tanks.get(j);
                         if (tank != bullet.getTank()) {
                             if (bullet.getShape().intersects(tank.getShape().getLayoutBounds())) {
                                 bullet.setHit(true);
@@ -231,6 +241,7 @@ public class GameManager extends Thread {
                                     try {
                                         server.sendYouDead(dead);
                                         playerInfos.remove(dead);
+                                        playerInfosSize--;
                                         server.sendYouKill(killer);
                                         killerTank.setHp(Math.min(killerTank.getHp() + 1, killerTank.getMaxHp()));
                                         calculateTopScore();
@@ -245,7 +256,8 @@ public class GameManager extends Thread {
                     }
                 }
                 if (!bullet.isHit()) {
-                    for (Bullet b : bullets) {
+                    for (int j = 0; j < bulletsSize; j++) {
+                        Bullet b = bullets.get(j);
                         if (b != bullet) {
                             if (bullet.getShape().intersects(b.getShape().getLayoutBounds())) {
                                 bullet.setHit(true);

@@ -13,11 +13,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-import jsice.network.multishooting.client.controllers.MainViewController;
+import jsice.network.multishooting.client.controller.MainViewController;
 import jsice.network.multishooting.common.models.Bullet;
 import jsice.network.multishooting.client.net.Client;
 import jsice.network.multishooting.common.models.GameEntity;
@@ -33,7 +32,6 @@ public class MainClient extends Application {
 
     private final int WINDOW_WIDTH = 800;
     private final int WINDOW_HEIGHT = 600;
-
 
     private Paint playerColor = Color.BLUE;
     private Paint enemyColor = Color.GREEN;

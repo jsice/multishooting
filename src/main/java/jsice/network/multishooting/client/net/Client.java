@@ -3,9 +3,7 @@ package jsice.network.multishooting.client.net;
 import jsice.network.multishooting.client.MainClient;
 import jsice.network.multishooting.common.models.GameEntity;
 import jsice.network.multishooting.common.models.Tank;
-import jsice.network.multishooting.common.models.Wall;
 import jsice.network.multishooting.common.net.ClientMessage;
-import jsice.network.multishooting.common.net.ClientMessageType;
 import jsice.network.multishooting.common.net.ServerMessage;
 
 import java.io.*;
