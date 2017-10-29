@@ -30,6 +30,8 @@ import java.util.ArrayList;
 
 public class MainClient extends Application {
 
+    private static String host;
+
     private final int WINDOW_WIDTH = 800;
     private final int WINDOW_HEIGHT = 600;
 
@@ -40,9 +42,9 @@ public class MainClient extends Application {
 
     private Tank player;
     private ArrayList<GameEntity> entities;
-    private ArrayList<Wall> walls = new ArrayList<>();
-    private int score = 0;
-    private String topScoreMessage = "";
+    private ArrayList<Wall> walls;
+    private int score;
+    private String topScoreMessage;
 
     private Scene mainScene, gameScene;
     private AnimationTimer animator;
@@ -51,12 +53,13 @@ public class MainClient extends Application {
     private Client client;
 
     public static void main(String[] args) {
+        host = args[0];
         launch();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        client = new Client("localhost", 13500);
+        client = new Client(host, 13500);
         client.setMain(this);
         client.start();
 
@@ -81,6 +84,9 @@ public class MainClient extends Application {
         gc = canvas.getGraphicsContext2D();
 
         entities = new ArrayList<>();
+        walls = new ArrayList<>();
+        topScoreMessage = "";
+        score = 0;
 
         final int[] keyPressed = {0};
 
