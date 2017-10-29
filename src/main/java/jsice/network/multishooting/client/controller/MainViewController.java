@@ -7,7 +7,10 @@ import jsice.network.multishooting.common.net.ClientMessage;
 import jsice.network.multishooting.common.net.ClientMessageType;
 
 import java.io.IOException;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class MainViewController {
 
     private MainClient main;

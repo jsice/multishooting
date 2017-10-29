@@ -9,7 +9,10 @@ import jsice.network.multishooting.common.net.ServerMessage;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class Client extends Thread {
 
     private MainClient main;

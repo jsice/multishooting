@@ -11,8 +11,10 @@ import jsice.network.multishooting.server.model.PlayerInfo;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Iterator;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class Server extends Thread {
 
     private DatagramSocket socket;

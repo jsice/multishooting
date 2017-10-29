@@ -5,7 +5,10 @@ import jsice.network.multishooting.server.net.Server;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class MainServer {
     public static void main(String[] args) {
         int port = 13500;

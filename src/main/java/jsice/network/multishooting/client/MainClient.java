@@ -28,6 +28,10 @@ import jsice.network.multishooting.common.net.ClientMessageType;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class MainClient extends Application {
 
     private static String host;

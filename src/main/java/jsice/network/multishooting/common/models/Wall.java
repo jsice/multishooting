@@ -3,7 +3,10 @@ package jsice.network.multishooting.common.models;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class Wall extends GameEntity {
 
     private double size;

@@ -11,7 +11,10 @@ import jsice.network.multishooting.server.net.Server;
 import java.io.*;
 import java.net.InetAddress;
 import java.util.*;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class GameManager extends Thread {
 
     private Server server;

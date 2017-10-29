@@ -4,7 +4,10 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class Bullet extends GameEntity {
 
     private double angle;

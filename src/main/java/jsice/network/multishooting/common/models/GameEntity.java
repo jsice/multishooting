@@ -4,7 +4,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Shape;
 
 import java.io.Serializable;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public abstract class GameEntity implements Serializable {
 
     protected int id;

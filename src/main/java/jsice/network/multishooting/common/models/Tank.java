@@ -5,7 +5,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class Tank extends GameEntity {
 
     private String name = "noname";

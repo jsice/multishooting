@@ -3,7 +3,10 @@ package jsice.network.multishooting.server.model;
 import jsice.network.multishooting.common.models.Tank;
 
 import java.net.InetAddress;
-
+/**
+ * Wiwadh Chinanuphandh
+ * 5810400051
+ */
 public class PlayerInfo {
 
     private InetAddress ip;
