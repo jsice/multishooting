@@ -12,6 +12,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
@@ -20,6 +22,7 @@ import jsice.network.multishooting.common.models.Bullet;
 import jsice.network.multishooting.client.net.Client;
 import jsice.network.multishooting.common.models.GameEntity;
 import jsice.network.multishooting.common.models.Tank;
+import jsice.network.multishooting.common.models.Wall;
 import jsice.network.multishooting.common.net.ClientMessage;
 import jsice.network.multishooting.common.net.ClientMessageType;
 
@@ -32,15 +35,22 @@ public class MainClient extends Application {
     private final int WINDOW_HEIGHT = 600;
 
 
+    private Paint playerColor = Color.BLUE;
+    private Paint enemyColor = Color.GREEN;
+    private Paint bulletColor = Color.YELLOW;
+    private Paint wallColor = Color.BLACK;
+
     private Tank player;
     private ArrayList<GameEntity> entities;
+    private ArrayList<Wall> walls = new ArrayList<>();
+    private int score = 0;
+    private String topScoreMessage = "";
 
     private Scene mainScene, gameScene;
     private AnimationTimer animator;
     private GraphicsContext gc;
 
     private Client client;
-
 
     public static void main(String[] args) {
         launch();
@@ -133,19 +143,33 @@ public class MainClient extends Application {
         gc.setTransform(1, 0, 0, 1, WINDOW_WIDTH/2-player.getX(), WINDOW_HEIGHT/2-player.getY());
         gc.clearRect(player.getX()-WINDOW_WIDTH/2 , player.getY()-WINDOW_HEIGHT/2,  WINDOW_WIDTH, WINDOW_HEIGHT);
 
+        gc.setFill(wallColor);
+        for (Wall w: walls) {
+            w.draw(gc);
+        }
+        
         for (GameEntity entity: entities) {
-            if (entity instanceof Tank) gc.setFill(Color.GREEN);
-            if (entity instanceof Bullet) gc.setFill(Color.YELLOW);
+            if (entity instanceof Tank) gc.setFill(enemyColor);
+            if (entity instanceof Bullet) gc.setFill(bulletColor);
             entity.draw(gc);
         }
-        gc.setFill(Color.BLUE);
+        gc.setFill(playerColor);
         player.draw(gc);
 
         Affine affine = gc.getTransform();
         gc.setTransform(new Affine());
         gc.setFill(Color.RED);
         gc.setFont(Font.font("System", 36));
-        gc.fillText("Score: " + player.getScore(), 50, 50);
+
+        gc.fillText("Score: " + score, 50, 50);
+        gc.fillText("- Leaderboard -", 550, 50);
+
+        gc.setFont(Font.font("System", 18));
+        String[] scores = topScoreMessage.split("\n");
+
+        for (int i = 0; i < scores.length; i++) {
+            gc.fillText(scores[i], 550, 100 + 30*i);
+        }
         gc.setTransform(affine);
     }
 
@@ -184,5 +208,40 @@ public class MainClient extends Application {
 
     public void setEntities(ArrayList<GameEntity> entities) {
         this.entities = entities;
+    }
+
+    public void setWalls(ArrayList<Wall> walls) {
+        this.walls = walls;
+    }
+
+    public void loadMap(String mapInfo) throws IOException {
+        String[] lines = mapInfo.split("\n");
+        String[] firstLine = lines[0].split(" ");
+        String[] secondline = lines[1].split(" ");
+        int minX = Integer.parseInt(firstLine[0]);
+        int minY = Integer.parseInt(firstLine[1]);
+        int row = Integer.parseInt(secondline[0]);
+        int col = Integer.parseInt(secondline[1]);
+        int size = Integer.parseInt(secondline[2]);
+        int lc = 2;
+        for (int i = 0; i < row; i++) {
+            String line = lines[lc];
+            lc++;
+            for (int j = 0; j < col; j++) {
+                char c = line.charAt(j);
+                if (c == 'w') {
+                    Wall w = new Wall(minX + j*size + size/2, minY + i*size + size/2, size);
+                    walls.add(w);
+                }
+            }
+        }
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setTopScoreMessage(String topScoreMessage) {
+        this.topScoreMessage = topScoreMessage;
     }
 }

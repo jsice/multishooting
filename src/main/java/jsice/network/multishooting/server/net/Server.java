@@ -76,8 +76,26 @@ public class Server extends Thread {
     public void sendYouKill(PlayerInfo playerInfo) throws IOException {
         InetAddress ip = playerInfo.getIp();
         int port = playerInfo.getPort();
+        int score = playerInfo.getScore();
         ServerMessage serverMessage = new ServerMessage(ServerMessageType.YouKill, 303);
+        serverMessage.setData(score);
         send(serverMessage, ip, port);
+    }
+
+    public void sendMapInfo(InetAddress ip, int port) throws IOException {
+        ServerMessage serverMessage = new ServerMessage(ServerMessageType.MapInfo, 201);
+        serverMessage.setData(gameManager.getMapInfo());
+        send(serverMessage, ip, port);
+    }
+
+    public void sendTopScore() throws IOException {
+        for (PlayerInfo playerInfo: gameManager.getPlayerInfos()) {
+            InetAddress ip = playerInfo.getIp();
+            int port = playerInfo.getPort();
+            ServerMessage serverMessage = new ServerMessage(ServerMessageType.TopScore, 202);
+            serverMessage.setData(gameManager.getTopScoreText());
+            send(serverMessage, ip, port);
+        }
     }
 
     @Override
@@ -93,11 +111,13 @@ public class Server extends Thread {
                     case Play: {
                         String name = (String) message.getData();
                         String[] location = gameManager.getRandomFreeLocation().split(" ");
-                        Tank tank = new Tank(Double.parseDouble(location[0]), Double.parseDouble(location[1]));
-                        if (location[0].equals("-10000")) {
+                        if (location[0].equals("null")) {
                             send(new ServerMessage(ServerMessageType.NoLocation, 402), senderIP, senderPort);
-                        } else if (gameManager.addPlayer(senderIP, senderPort, name, tank)) {
+                        } else if (gameManager.addPlayer(senderIP, senderPort, name, new Tank(Double.parseDouble(location[0]), Double.parseDouble(location[1])))) {
                             send(new ServerMessage(ServerMessageType.GameStart, 200), senderIP, senderPort);
+                            gameManager.calculateTopScore();
+                            sendTopScore();
+                            sendMapInfo(senderIP, senderPort);
                             sendUpdateObjects();
                         } else {
                             send(new ServerMessage(ServerMessageType.DuplicateNameExists, 401), senderIP, senderPort);

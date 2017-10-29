@@ -4,28 +4,43 @@ import javafx.scene.shape.Rectangle;
 import jsice.network.multishooting.common.models.Bullet;
 import jsice.network.multishooting.common.models.Tank;
 import jsice.network.multishooting.common.models.GameEntity;
+import jsice.network.multishooting.common.models.Wall;
 import jsice.network.multishooting.server.model.PlayerInfo;
 import jsice.network.multishooting.server.net.Server;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 public class GameManager extends Thread {
 
     private Server server;
 
     private ArrayList<PlayerInfo> playerInfos;
-    private ArrayList<GameEntity> gameEntities;
     private ArrayList<Tank> tanks;
     private ArrayList<Bullet> bullets;
+    private ArrayList<Wall> walls;
+    private int minX;
+    private int maxX;
+    private int minY;
+    private int maxY;
+    private String topScoreText;
+
+    private String mapInfo;
 
     public GameManager() {
         this.playerInfos = new ArrayList<>();
-        this.gameEntities = new ArrayList<>();
         this.tanks = new ArrayList<>();
         this.bullets = new ArrayList<>();
+        this.walls = new ArrayList<>();
+
+        try {
+            loadMapInfo();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setServer(Server server) {
@@ -63,21 +78,27 @@ public class GameManager extends Thread {
         double randomY = -10000;
         int round = 0;
         Random rand = new Random();
-        int max = 250;
-        int min = -250;
         double width = 60;
         double height = 60;
         while (!done) {
-            randomX = rand.nextInt((max - min) + 1) + min;
-            randomY = rand.nextInt((max - min) + 1) + min;
+            randomX = rand.nextInt((maxX - minX) + 1) + minX;
+            randomY = rand.nextInt((maxY - minY) + 1) + minY;
+            System.out.printf("%d: %f %f\n",round, randomX, randomY);
             Rectangle playerBox = new Rectangle(randomX, randomY, width, height);
+            ArrayList<GameEntity> gameEntities = new ArrayList<>();
+            gameEntities.addAll(tanks);
+            gameEntities.addAll(bullets);
+            gameEntities.addAll(walls);
+            if (gameEntities.size() == 0) done = true;
             for (GameEntity entity: gameEntities) {
                 if (playerBox.intersects(entity.getShape().getLayoutBounds())) {
-                    done = true;
+                    done = false;
                     break;
+                } else {
+                    done = true;
                 }
             }
-            if (round > 40) break;
+            if (round > 40) return "null null";
             round++;
         }
 
@@ -99,6 +120,67 @@ public class GameManager extends Thread {
         return null;
     }
 
+    private void loadMapInfo() throws IOException {
+        FileReader fileReader = new FileReader(getClass().getResource("/maps/map.txt").getFile());
+        BufferedReader bf = new BufferedReader(fileReader);
+        String info = "";
+        String[] firstline = bf.readLine().split(" ");
+        int row = Integer.parseInt(firstline[0]);
+        int col = Integer.parseInt(firstline[1]);
+        int size = Integer.parseInt(firstline[2]);
+        maxY = (row * size)/2;
+        minY = -maxY;
+        maxX = (col * size)/2;
+        minX = -maxX;
+        info += String.format("%d %d\n%d %d %d\n", minX, minY, row, col, size);
+        for (int i = 0; i < row; i++) {
+            String line = bf.readLine();
+            info += line;
+            if (i != row - 1) info += "\n";
+            for (int j = 0; j < col; j++) {
+                char c = line.charAt(j);
+                if (c == 'w') {
+                    Wall w = new Wall(minX + j*size + size/2, minY + i*size + size/2, size);
+                    walls.add(w);
+                }
+            }
+        }
+        bf.close();
+        mapInfo = info;
+
+    }
+
+    public String getMapInfo() {
+        return mapInfo;
+    }
+
+    public ArrayList<Wall> getWalls() {
+        return walls;
+    }
+
+    public void calculateTopScore() {
+        ArrayList<PlayerInfo> playerInfos = new ArrayList<>(this.playerInfos);
+        Collections.sort(playerInfos, new Comparator<PlayerInfo>() {
+            @Override
+            public int compare(PlayerInfo o1, PlayerInfo o2) {
+                if (o1.getScore() > o2.getScore()) return -1;
+                if (o1.getScore() < o2.getScore()) return 1;
+                return 0;
+            }
+        });
+        String top = "";
+        int size = Math.min(5, playerInfos.size());
+        for (int i = 0; i < size; i++) {
+            top += (i+1) + ". " + playerInfos.get(i).getName();
+            if (i != size - 1) top += "\n";
+        }
+        topScoreText = top;
+    }
+
+    public String getTopScoreText() {
+        return topScoreText;
+    }
+
     @Override
     public void run() {
         while (true) {
@@ -113,6 +195,13 @@ public class GameManager extends Thread {
                 if ((action & 4) != 0) t.move(0, -1);
                 if ((action & 8) != 0) t.move(0, 1);
                 if ((action & 16) != 0) shootBulletFrom(t);
+                for (Wall w: walls) {
+                    if (t.getShape().intersects(w.getShape().getLayoutBounds())) {
+                        if ((action & 4) != 0) t.move(0, 1);
+                        if ((action & 8) != 0) t.move(0, -1);
+                        break;
+                    }
+                }
                 playerInfo.setAction(0);
             }
 
@@ -123,6 +212,14 @@ public class GameManager extends Thread {
             }
             for (Bullet bullet: bullets) {
                 if (!bullet.isHit()) {
+                    for (Wall w: walls) {
+                        if (bullet.getShape().intersects(w.getShape().getLayoutBounds())) {
+                            bullet.setHit(true);
+                            break;
+                        }
+                    }
+                }
+                if (!bullet.isHit()) {
                     for (Tank tank : tanks) {
                         if (tank != bullet.getTank()) {
                             if (bullet.getShape().intersects(tank.getShape().getLayoutBounds())) {
@@ -130,14 +227,16 @@ public class GameManager extends Thread {
                                 tank.setHp(tank.getHp() - 1);
                                 if (tank.getHp() == 0) {
                                     Tank killerTank = bullet.getTank();
-                                    killerTank.setScore(killerTank.getScore() + 10);
                                     PlayerInfo dead = getPlayerInfoFromTank(tank);
-                                    PlayerInfo kill = getPlayerInfoFromTank(killerTank);
+                                    PlayerInfo killer = getPlayerInfoFromTank(killerTank);
+                                    killer.setScore(killer.getScore() + 10);
                                     try {
                                         server.sendYouDead(dead);
                                         playerInfos.remove(dead);
-                                        server.sendYouKill(kill);
+                                        server.sendYouKill(killer);
                                         killerTank.setHp(Math.min(killerTank.getHp() + 1, killerTank.getMaxHp()));
+                                        calculateTopScore();
+                                        server.sendTopScore();
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }

@@ -2,7 +2,6 @@ package jsice.network.multishooting.common.models;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -12,10 +11,9 @@ public class Tank extends GameEntity {
     private String name = "noname";
     private double maxHp = 5;
     private double hp = maxHp;
-    private double radius = 40;
+    private double radius = 20;
     private double angle = 0;
     private double speed = 4;
-    private int score = 0;
 
     public Tank(double _x, double _y) {
         super(_x, _y);
@@ -41,25 +39,25 @@ public class Tank extends GameEntity {
         double rightEyeX = x + 10;
         double rightEyeY = y - 12.5;
         gc.setFill(Color.RED);
-        drawCircle(gc, getRotatedX(leftEyeX, leftEyeY), getRotatedY(leftEyeX, leftEyeY), 5);
-        drawCircle(gc, getRotatedX(rightEyeX, rightEyeY), getRotatedY(rightEyeX, rightEyeY), 5);
+        drawCircle(gc, getRotatedX(leftEyeX, leftEyeY), getRotatedY(leftEyeX, leftEyeY), 2.5);
+        drawCircle(gc, getRotatedX(rightEyeX, rightEyeY), getRotatedY(rightEyeX, rightEyeY), 2.5);
     }
 
     private void drawName(GraphicsContext gc) {
         gc.setFill(Color.BLACK);
         gc.setFont(new Font("System", 15));
-        gc.fillText(name, x - radius/2, y - radius/2 - 20);
+        gc.fillText(name, x - radius, y - radius - 20);
     }
 
     private void drawHPBar(GraphicsContext gc) {
         gc.setFill(Color.RED);
-        gc.fillRect(x - radius/2, y - radius/2 - 10, radius * hp/maxHp, 5);
+        gc.fillRect(x - radius, y - radius - 10, radius*2 * hp/maxHp, 5);
         gc.setFill(Color.BLACK);
-        gc.strokeRect(x - radius/2, y - radius/2 - 10, radius, 5);
+        gc.strokeRect(x - radius, y - radius - 10, radius*2, 5);
     }
 
     private void drawCircle(GraphicsContext gc, double centerX, double centerY, double radius) {
-        gc.fillOval(centerX - radius/2, centerY - radius/2, radius, radius);
+        gc.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
     }
 
     public void rotateRight() {
@@ -116,14 +114,6 @@ public class Tank extends GameEntity {
 
     public double getHp() {
         return hp;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public int getScore() {
-        return score;
     }
 
     public double getRadius() {

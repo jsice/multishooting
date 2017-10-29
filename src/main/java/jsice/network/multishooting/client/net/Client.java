@@ -3,6 +3,7 @@ package jsice.network.multishooting.client.net;
 import jsice.network.multishooting.client.MainClient;
 import jsice.network.multishooting.common.models.GameEntity;
 import jsice.network.multishooting.common.models.Tank;
+import jsice.network.multishooting.common.models.Wall;
 import jsice.network.multishooting.common.net.ClientMessage;
 import jsice.network.multishooting.common.net.ClientMessageType;
 import jsice.network.multishooting.common.net.ServerMessage;
@@ -62,8 +63,23 @@ public class Client extends Thread {
                         main.startGame();
                         break;
                     }
+                    case MapInfo: {
+                        String mapInfo = (String) message.getData();
+                        main.loadMap(mapInfo);
+                        break;
+                    }
+                    case TopScore: {
+                        String topScore = (String) message.getData();
+                        main.setTopScoreMessage(topScore);
+                        break;
+                    }
                     case YouDead: {
                         main.endGame();
+                        break;
+                    }
+                    case YouKill: {
+                        int score = (int) message.getData();
+                        main.setScore(score);
                         break;
                     }
                     case UpdateObject: {

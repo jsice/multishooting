@@ -11,6 +11,7 @@ public class PlayerInfo {
     private String name;
     private Tank tank;
     private int action;
+    private int score;
 
     public PlayerInfo(InetAddress ip, int port, String name, Tank tank) {
         this.ip = ip;
@@ -50,4 +51,13 @@ public class PlayerInfo {
     public int getAction() {
         return action;
     }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
 }
