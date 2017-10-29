@@ -8,9 +8,7 @@ import jsice.network.multishooting.common.models.Wall;
 import jsice.network.multishooting.server.model.PlayerInfo;
 import jsice.network.multishooting.server.net.Server;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.util.*;
 
@@ -121,8 +119,8 @@ public class GameManager extends Thread {
     }
 
     private void loadMapInfo() throws IOException {
-        FileReader fileReader = new FileReader(getClass().getResource("/maps/map.txt").getFile());
-        BufferedReader bf = new BufferedReader(fileReader);
+        InputStream is = getClass().getResourceAsStream("/maps/map.txt");
+        BufferedReader bf = new BufferedReader(new InputStreamReader(is));
         String info = "";
         String[] firstline = bf.readLine().split(" ");
         int row = Integer.parseInt(firstline[0]);

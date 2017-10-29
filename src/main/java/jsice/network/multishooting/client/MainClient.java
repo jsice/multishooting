@@ -70,6 +70,7 @@ public class MainClient extends Application {
 
         primaryStage.setTitle("shoot'em");
         primaryStage.setScene(mainScene);
+        primaryStage.setResizable(false);
         primaryStage.show();
         primaryStage.setOnCloseRequest(e -> System.exit(0));
     }
